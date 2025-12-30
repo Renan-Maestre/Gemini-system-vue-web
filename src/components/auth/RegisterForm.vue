@@ -1,57 +1,97 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { ref, type HTMLAttributes } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/services/api'
+import { isAxiosError } from 'axios'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Eye, EyeOff } from 'lucide-vue-next'
 
 const props = defineProps<{
-  class?: HTMLAttributes["class"]
+  class?: HTMLAttributes['class']
 }>()
+
+const router = useRouter()
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const loading = ref(false)
+const errorMessage = ref('')
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const handleSubmit = async () => {
+  loading.value = true
+  errorMessage.value = ''
+
+  try {
+    // 1. Faz a chamada à API
+    const response = await api.post('/register', {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: confirmPassword.value,
+    })
+
+    const token = response.data.token
+
+    localStorage.setItem('user_token', token)
+    localStorage.setItem('user_name', response.data.user.name)
+    localStorage.setItem('user_email', response.data.user.email)
+
+    await router.push('/home')
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      errorMessage.value = error.response?.data?.message || 'Erro no registro.'
+    } else {
+      errorMessage.value = 'Ocorreu um erro inesperado.'
+    }
+    console.error('Erro no registro:', error)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
   <div :class="cn('flex flex-col gap-6', props.class)">
     <Card class="overflow-hidden p-0">
       <CardContent class="grid p-0 md:grid-cols-2">
-        <form class="p-6 md:p-8">
-
+        <form @submit.prevent="handleSubmit" class="p-6 md:p-8">
           <FieldGroup>
-
             <div class="flex flex-col items-center gap-2 text-center">
-              <h1 class="text-2xl font-bold">
-                Crie sua conta
-              </h1>
+              <h1 class="text-2xl font-bold">Crie sua conta</h1>
               <p class="text-muted-foreground text-sm text-balance">
                 Insira seu e-mail abaixo para criar sua conta.
               </p>
             </div>
             <Field>
-              <FieldLabel for="name">
-                Nome
-              </FieldLabel>
+              <FieldLabel for="name"> Nome </FieldLabel>
               <Input
                 id="name"
+                v-model="name"
                 type="text"
                 placeholder="Seu nome completo"
                 required
               />
-
             </Field>
 
             <Field>
-              <FieldLabel for="email">
-                Email
-              </FieldLabel>
+              <FieldLabel for="email"> Email </FieldLabel>
               <Input
                 id="email"
+                v-model="email"
                 type="email"
                 placeholder="email@example.com"
                 required
@@ -61,29 +101,54 @@ const props = defineProps<{
               </FieldDescription>
             </Field>
 
-            <Field>
-              <Field class="grid grid-cols-2 gap-4">
-                <Field>
-                  <FieldLabel for="password">
-                    Senha
-                  </FieldLabel>
-                  <Input id="password" type="password" required />
-                </Field>
-                <Field>
-                  <FieldLabel for="confirm-password">
-                    Confirmar Senha
-                  </FieldLabel>
-                  <Input id="confirm-password" type="password" required />
-                </Field>
+            <Field class="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel for="password">Senha</FieldLabel>
+                <div class="relative">
+                  <Input
+                    id="password"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <EyeOff v-if="!showPassword" class="size-4" />
+                    <Eye v-else class="size-4" />
+                  </button>
+                </div>
               </Field>
-              <FieldDescription>
-                Deve ter no mínimo 8 caracteres.
-              </FieldDescription>
+
+              <Field>
+                <FieldLabel for="confirm-password">Confirmar Senha</FieldLabel>
+                <div class="relative">
+                  <Input
+                    id="confirm-password"
+                    v-model="confirmPassword"
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    class="pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <EyeOff v-if="!showConfirmPassword" class="size-4" />
+                    <Eye v-else class="size-4" />
+                  </button>
+                </div>
+              </Field>
             </Field>
 
+
             <Field>
-              <Button type="submit">
-                Crie sua conta
+              <Button type="submit" :disabled="loading" class="w-full">
+                {{ loading ? 'Processando...' : 'Criar conta' }}
               </Button>
             </Field>
 
@@ -122,27 +187,26 @@ const props = defineProps<{
             </Field>
 
             <FieldDescription class="text-center">
-              Já tem uma conta? <RouterLink to="/login" class="ml-1 underline offset-2 hover:no-underline">
+              Já tem uma conta?
+              <RouterLink to="/login" class="ml-1 underline offset-2 hover:no-underline">
                 Log in
               </RouterLink>
             </FieldDescription>
-
           </FieldGroup>
         </form>
-
 
         <div class="bg-muted relative hidden md:block">
           <img
             src="https://images.unsplash.com/photo-1508780709619-79562169bc64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
             alt="Image"
-            class="absolute inset-0 h-full w-full object-cover  "
-          >
+            class="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
       </CardContent>
     </Card>
     <FieldDescription class="px-6 text-center">
-      Ao clicar em entrar, você concorda com nossos <a href="#">Termos de Serviço</a>
-      e <a href="#">Política de Privacidade</a>.
+      Ao clicar em entrar, você concorda com nossos <a href="#">Termos de Serviço</a> e
+      <a href="#">Política de Privacidade</a>.
     </FieldDescription>
   </div>
 </template>

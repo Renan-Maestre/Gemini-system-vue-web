@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router' //
+import api from '@/services/api'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-vue-next'
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -18,14 +19,33 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
+const name = localStorage.getItem('user_name')
+const email = localStorage.getItem('user_email')
+
 const props = defineProps<{
   user: {
     name: string
     email: string
   }
 }>()
-
 const { isMobile } = useSidebar()
+const router = useRouter()
+
+async function handleLogout() {
+  try {
+    await api.post('/logout')
+  } catch (error) {
+    console.error('Erro ao invalidar token no servidor:', error)
+  } finally {
+
+    localStorage.removeItem('user_token')
+    localStorage.removeItem('user_name')
+    localStorage.removeItem('user_email')
+
+    
+    router.push('/login')
+  }
+}
 </script>
 
 <template>
@@ -45,8 +65,8 @@ const { isMobile } = useSidebar()
               <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="truncate text-xs">{{ user.email }}</span>
+              <span class="truncate font-medium">{{ name }}</span>
+              <span class="truncate text-xs">{{ email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -67,8 +87,8 @@ const { isMobile } = useSidebar()
                 <AvatarFallback class="rounded-lg"> RN </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ user.name }}</span>
-                <span class="truncate text-xs">{{ user.email }}</span>
+                <span class="truncate font-semibold">{{ name }}</span>
+                <span class="truncate text-xs">{{ email }}</span>
               </div>
             </div>
           </DropdownMenuLabel>
@@ -95,7 +115,7 @@ const { isMobile } = useSidebar()
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @click="handleLogout" class="cursor-pointer">
             <LogOut />
             Sair
           </DropdownMenuItem>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, type HTMLAttributes } from "vue"
-import { useRouter } from "vue-router";
-import  api  from "@/services/api";
-import { cn } from "@/lib/utils"
+import { ref, type HTMLAttributes } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '@/services/api'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { isAxiosError } from 'axios'
 import { Card, CardContent } from '@/components/ui/card'
@@ -15,9 +15,8 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 
-
 const props = defineProps<{
-  class?: HTMLAttributes["class"]
+  class?: HTMLAttributes['class']
 }>()
 
 const router = useRouter()
@@ -31,26 +30,34 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
+    // 1. Faz a chamada à API
     const response = await api.post('/login', {
       email: email.value,
-      password: password.value
+      password: password.value,
     })
 
-    localStorage.setItem('token', response.data.token)
+    const token = response.data.token
 
-    // Redireciona para a home após o sucesso
-    router.push('/home')
+    localStorage.setItem('user_token', token)
+
+    localStorage.setItem('user_name', response.data.user.name)
+    localStorage.setItem('user_email', response.data.user.email)
+
+
+    console.log('Login efetuado com sucesso, a redirecionar...')
+
+    await router.push('/home')
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      errorMessage.value = error.response?.data?.message || 'Falha na autenticação.'
+      errorMessage.value = error.response?.data?.message || 'Email ou senha incorretos.'
     } else {
-      errorMessage.value = 'Ocorreu um erro inesperado no sistema.'
+      errorMessage.value = 'Ocorreu um erro inesperado.'
     }
+    console.error('Erro no login:', error)
   } finally {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
@@ -66,13 +73,21 @@ const handleSubmit = async () => {
 
             <Field>
               <FieldLabel for="email">Email</FieldLabel>
-              <Input id="email" v-model="email" type="email" placeholder="email@example.com" required />
+              <Input
+                id="email"
+                v-model="email"
+                type="email"
+                placeholder="email@example.com"
+                required
+              />
             </Field>
 
             <Field>
               <div class="flex items-center">
                 <FieldLabel for="password">Senha</FieldLabel>
-                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline">esqueceu a senha?</a>
+                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline"
+                  >esqueceu a senha?</a
+                >
               </div>
               <Input id="password" v-model="password" type="password" required />
             </Field>
@@ -87,10 +102,11 @@ const handleSubmit = async () => {
               {{ errorMessage }}
             </p>
 
-            <FieldSeparator class="*:data-[slot=field-separator-content]:bg-card">Ou continue com</FieldSeparator>
+            <FieldSeparator class="*:data-[slot=field-separator-content]:bg-card"
+              >Ou continue com</FieldSeparator
+            >
 
-            <Field class="grid grid-cols-3 gap-4">
-               </Field>
+            <Field class="grid grid-cols-3 gap-4"> </Field>
 
             <FieldDescription class="text-center">
               Novo por aqui?
@@ -101,9 +117,18 @@ const handleSubmit = async () => {
           </FieldGroup>
         </form>
         <div class="bg-muted relative hidden md:block">
-          <img src="https://images.unsplash.com/photo-1508780709619-79562169bc64?auto=format&fit=crop&w=800&q=60" alt="Image" class="absolute inset-0 h-full w-full object-cover">
+          <img
+            src="https://images.unsplash.com/photo-1508780709619-79562169bc64?auto=format&fit=crop&w=800&q=60"
+            alt="Image"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
+
       </CardContent>
     </Card>
-    </div>
+     <FieldDescription class="px-6 text-center">
+      Ao clicar em entrar, você concorda com nossos <a href="#">Termos de Serviço</a>
+      e <a href="#">Política de Privacidade</a>.
+    </FieldDescription>
+  </div>
 </template>
