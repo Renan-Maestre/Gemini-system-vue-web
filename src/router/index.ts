@@ -15,18 +15,30 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: { isPublic: true },
     },
     {
       path: '/register',
       name: 'register',
       component: RegsiterView,
+      meta: { isPublic: true },
     },
     {
       path: '/home',
       name: 'home',
       component: () => import('../views/home/HomeView.vue'),
-    }
+    },
   ],
 })
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('user_token')
+
+  if (!to.meta.isPublic && !isAuthenticated) {
+    next('/login')
+  } else {
+    next()
+  }
+})
+
 
 export default router
