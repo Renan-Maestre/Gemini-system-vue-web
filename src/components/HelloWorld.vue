@@ -4,7 +4,7 @@ defineProps<{
 }>()
 </script>
 
-<template>
+<template>git push -u origin main
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
     <h3>
