@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, type AriaAttributes } from 'vue'
 import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
 import {
   FlexRender,
@@ -35,11 +35,12 @@ import { NativeSelect } from '@/components/ui/native-select'
 
 import { Label } from '@/components/ui/label'
 import api from '@/services/api'
+import Field from '../ui/field/Field.vue'
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  categories: { id: string; name: string }[]
+  categories: any[]
 }>()
 
 const emit = defineEmits(['refresh'])
@@ -139,7 +140,7 @@ const handleSubmit = async () => {
               </div>
               <div class="grid gap-2">
                 <Label>Categoria</Label>
-                <NativeSelect v-model="form.category_id" required class="w-full">
+                <NativeSelect v-bind="Field" v-model="form.category_id" required class="w-full">
                   <option value="">Selecione uma categoria</option>
                   <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                     {{ cat.name }}

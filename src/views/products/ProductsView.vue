@@ -1,26 +1,24 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { columns, type Product } from '@/components/products/columns'
+import { columns } from '@/components/products/columns'
 import DataTable from '@/components/products/data-table.vue'
 import api from '@/services/api'
 
-const products = ref<Product[]>([])
-const categories = ref([])
+const products = ref([])
+const categories = ref([]) // Adicione este ref
 const loading = ref(true)
 
 const fetchData = async () => {
   loading.value = true
   try {
-
     const [prodRes, catRes] = await Promise.all([
       api.get('/product'),
-      api.get('/category')
+      api.get('/category') // Busca as categorias para o select
     ])
-
-    products.value = prodRes.data.data 
-    categories.value = catRes.data.data
+    products.value = prodRes.data.data
+    categories.value = catRes.data.data // Salva as categorias
   } catch (error) {
-    console.error("Erro ao carregar dados:", error)
+    console.error("Erro:", error)
   } finally {
     loading.value = false
   }
