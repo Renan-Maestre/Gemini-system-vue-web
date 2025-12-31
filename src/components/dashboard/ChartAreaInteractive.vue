@@ -28,8 +28,6 @@ import {
 } from '@/components/ui/select'
 import { computed, ref } from "vue"
 
-const description = "An interactive area chart"
-
 const chartData = [
   { date: new Date("2024-04-01"), desktop: 222, mobile: 150 },
   { date: new Date("2024-04-02"), desktop: 97, mobile: 180 },
@@ -189,9 +187,9 @@ const filterRange = computed(() => {
   <Card class="pt-0">
     <CardHeader class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
       <div class="grid flex-1 gap-1">
-        <CardTitle>Area Chart - Interactive</CardTitle>
+        <CardTitle>Historico de Produtos vendidos - interativo </CardTitle>
         <CardDescription>
-          Showing total visitors for the last 3 months
+          Visualize o historico de vendas por plataforma nos ultimos meses.
         </CardDescription>
       </div>
       <Select v-model="timeRange">
@@ -203,13 +201,13 @@ const filterRange = computed(() => {
         </SelectTrigger>
         <SelectContent class="rounded-xl">
           <SelectItem value="90d" class="rounded-lg">
-            Last 3 months
+            3 meses
           </SelectItem>
           <SelectItem value="30d" class="rounded-lg">
-            Last 30 days
+            30 dias
           </SelectItem>
           <SelectItem value="7d" class="rounded-lg">
-            Last 7 days
+            7 dias
           </SelectItem>
         </SelectContent>
       </Select>
@@ -243,7 +241,7 @@ const filterRange = computed(() => {
             :num-ticks="6"
             :tick-format="(d: number, index: number) => {
               const date = new Date(d)
-              return date.toLocaleDateString('en-US', {
+              return date.toLocaleDateString('pt-br', {
                 month: 'short',
                 day: 'numeric',
               })
@@ -259,7 +257,7 @@ const filterRange = computed(() => {
           <ChartCrosshair
             :template="componentToString(chartConfig, ChartTooltipContent, {
               labelFormatter: (d) => {
-                return new Date(d).toLocaleDateString('en-US', {
+                return new Date(d).toLocaleDateString('pt-br', {
                   month: 'short',
                   day: 'numeric',
                 })
