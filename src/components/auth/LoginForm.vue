@@ -64,7 +64,7 @@ const handleSubmit = async () => {
 <template>
   <div :class="cn('flex flex-col gap-6', props.class)">
     <Card class="overflow-hidden p-0">
-      <CardContent class="grid p-0 md:grid-cols-2">
+      <CardContent class="grid p-0 md:grid-cols-2 ">
         <form @submit.prevent="handleSubmit" class="p-6 md:p-8">
           <FieldGroup>
             <div class="flex flex-col items-center gap-2 text-center">

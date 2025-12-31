@@ -1,18 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { columns, type Product } from '@/components/products/columns'
 import DataTable from '@/components/products/data-table.vue'
+import api from '@/services/api'
 
-const products = ref<Product[]>([
-  { id: '1', name: 'MacBook Pro', category: 'Eletrônicos', price: 12500, status: 'ativo', stock: 10 },
-  { id: '2', name: 'iPhone 15', category: 'Mobile', price: 7500, status: 'ativo', stock: 25 },
-  { id: '3', name: 'Cadeira Gamer', category: 'Móveis', price: 1200, status: 'inativo', stock: 0 },
-])
+const products = ref<Product[]>([])
+const categories = ref([])
+const loading = ref(true)
+
+const fetchData = async () => {
+  loading.value = true
+  try {
+
+    const [prodRes, catRes] = await Promise.all([
+      api.get('/product'),
+      api.get('/category')
+    ])
+
+    products.value = prodRes.data.data 
+    categories.value = catRes.data.data
+  } catch (error) {
+    console.error("Erro ao carregar dados:", error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => fetchData())
 </script>
 
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">Gestão de Produtos</h1>
-    <DataTable :columns="columns" :data="products" />
+    <DataTable
+      :columns="columns"
+      :data="products"
+      :categories="categories"
+      @refresh="fetchData"
+    />
   </div>
 </template>

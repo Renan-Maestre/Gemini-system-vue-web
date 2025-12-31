@@ -1,64 +1,55 @@
 import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MoreHorizontal, ArrowUpDown } from 'lucide-vue-next'
+import { MoreHorizontal } from 'lucide-vue-next'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 export interface Product {
-  id: string
+  id: number
   name: string
-  category: string
   price: number
-  stock: number
-  status: 'ativo' | 'inativo' | 'arquivado'
+  category: {
+    id: number
+    name: string
+  }
+  status?: string
+  stock?: number
 }
 
 export const columns: ColumnDef<Product>[] = [
   {
+    accessorKey: 'id',
+    header: 'ID',
+    size: 50,
+  },
+  {
     accessorKey: 'name',
-    size: 400,
-    header: ({ column }) =>
-      h(
-        Button,
-        {
-          variant: 'ghost',
-          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        },
-        () => ['Nome', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
-      ),
+    header: 'Nome',
     cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    size: 100,
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      // Define a cor baseada no seu status
-      const variant =
-        status === 'ativo' ? 'default' : status === 'inativo' ? 'secondary' : 'destructive'
-
-      return h(Badge, { variant, class: 'capitalize' }, () => status)
-    },
+    // Acessando o nome dentro do objeto category
+    accessorKey: 'category.name',
+    header: 'Categoria',
+    cell: ({ row }) => h('div', {}, row.original.category?.name || 'Sem categoria'),
   },
   {
     accessorKey: 'price',
-    header: () => h('div', { class: 'text-right' }, 'Preço'),
+    header: () => h('div', { class: 'text-center' }, 'Preço'),
     cell: ({ row }) => {
       const price = Number.parseFloat(row.getValue('price'))
-      const formatted = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(price)
-      return h('div', { class: 'text-right font-medium' }, formatted)
+      return h(
+        'div',
+        { class: 'text-center' },
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price),
+      )
     },
   },
   {

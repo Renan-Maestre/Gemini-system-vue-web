@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
 import {
   FlexRender,
@@ -9,7 +9,6 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-
 import {
   Table,
   TableBody,
@@ -18,15 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { valueUpdater } from '@/components/ui/table/utils'
-
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -34,26 +30,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@/components/ui/native-select'
+
+import { NativeSelect } from '@/components/ui/native-select'
 
 import { Label } from '@/components/ui/label'
-
+import api from '@/services/api'
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  categories: any[]
 }>()
+
+const emit = defineEmits(['refresh'])
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
@@ -85,6 +74,33 @@ const table = useVueTable({
     },
   },
 })
+
+const open = ref(false)
+const loading = ref(false)
+const form = ref({
+  name: '',
+  price: '',
+  category_id: '',
+})
+
+const handleSubmit = async () => {
+  loading.value = true
+  try {
+    await api.post('/product', {
+      nome: form.value.name,
+      preco: form.value.price,
+      category_id: form.value.category_id,
+    })
+
+    open.value = false
+    form.value = { name: '', price: '', category_id: '' }
+    emit('refresh')
+  } catch (error) {
+    console.error('Erro ao criar produto:', error)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -92,57 +108,49 @@ const table = useVueTable({
     <div class="flex items-center justify-between py-4 gap-4">
       <Input
         class="max-w-sm"
-        placeholder="Pesquisar categoria pelo nome..."
+        placeholder="Pesquisar produto..."
         :model-value="table.getColumn('name')?.getFilterValue() as string"
         @update:model-value="table.getColumn('name')?.setFilterValue($event)"
       />
 
-      <Dialog>
-        <form>
-          <DialogTrigger as-child>
-            <Button> <Plus class="w-4 h-4 mr-2" /> Novo produto </Button>
-          </DialogTrigger>
-          <DialogContent class="sm:max-w-[425px]">
+      <Dialog v-model:open="open">
+        <DialogTrigger as-child>
+          <Button> <Plus class="w-4 h-4 mr-2" /> Novo produto </Button>
+        </DialogTrigger>
+        <DialogContent class="sm:max-w-[425px]">
+          <form @submit.prevent="handleSubmit">
             <DialogHeader>
               <DialogTitle>Criar novo produto</DialogTitle>
-              <DialogDescription> Adicione os detalhes do novo produto abaixo. </DialogDescription>
+              <DialogDescription> Adicione os detalhes abaixo. </DialogDescription>
             </DialogHeader>
-            <div class="grid gap-4">
-              <div class="grid gap-3">
-                <Label for="name-1">Nome</Label>
-                <Input id="name-1" name="name"  />
-              </div>
-              <div class="grid gap-3">
-                <Label for="price">Preço</Label>
-                <Input id="price" name="price" />
-              </div>
-              <div class="grid gap-3">
-                <FormField v-slot="{ field }" name="country">
-                  <FormItem>
-                    <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <NativeSelect v-bind="field">
-                        <NativeSelectOption value=""> Selecione a Categoria </NativeSelectOption>
-                        <NativeSelectOption value="us"> tetse </NativeSelectOption>
-                        <NativeSelectOption value="uk"> teste2 </NativeSelectOption>
-                        <NativeSelectOption value="ca"> teste3 </NativeSelectOption>
-                      </NativeSelect>
-                    </FormControl>
-                    <FormDescription> Selecine a categoria </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-              </div>
 
+            <div class="grid gap-4 py-4">
+              <div class="grid gap-2">
+                <Label for="name">Nome</Label>
+                <Input id="name" v-model="form.name" required />
+              </div>
+              <div class="grid gap-2">
+                <Label for="price">Preço</Label>
+                <Input id="price" type="number" step="0.01" v-model="form.price" required />
+              </div>
+              <div class="grid gap-2">
+                <Label>Categoria</Label>
+                <NativeSelect v-model="form.category_id" required class="w-full">
+                  <option value="">Selecione uma categoria</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                    {{ cat.name }}
+                  </option>
+                </NativeSelect>
+              </div>
             </div>
+
             <DialogFooter>
-              <DialogClose as-child>
-                <Button variant="outline"> Cancel </Button>
-              </DialogClose>
-              <Button type="submit"> Salvar </Button>
+              <Button type="submit" :disabled="loading">
+                {{ loading ? 'Salvando...' : 'Salvar Produto' }}
+              </Button>
             </DialogFooter>
-          </DialogContent>
-        </form>
+          </form>
+        </DialogContent>
       </Dialog>
     </div>
 
