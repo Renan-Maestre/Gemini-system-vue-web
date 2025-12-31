@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { ref } from 'vue'
+import { ref,defineEmits } from 'vue'
 import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
 import {
   FlexRender,
@@ -9,6 +9,7 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
+
 
 import {
   Table,
@@ -34,21 +35,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@/components/ui/native-select'
+import api from '@/services/api'
+import { isAxiosError } from 'axios'
 
 import { Label } from '@/components/ui/label'
-
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
@@ -85,6 +75,38 @@ const table = useVueTable({
     },
   },
 })
+
+const emit = defineEmits(['refresh'])
+
+
+const name = ref('')
+const loading = ref(false)
+const errorMessage = ref('')
+const open = ref(false)
+
+const handleSubmit = async () => {
+  loading.value = true
+  errorMessage.value = ''
+
+  try {
+    await api.post('/category', {
+      name: name.value,
+    })
+    name.value = ''
+    open.value = false
+
+    emit('refresh')
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      errorMessage.value = error.response?.data?.message || 'Email ou senha incorretos.'
+    } else {
+      errorMessage.value = 'Ocorreu um erro inesperado.'
+    }
+    console.error('Erro no login:', error)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -97,52 +119,43 @@ const table = useVueTable({
         @update:model-value="table.getColumn('name')?.setFilterValue($event)"
       />
 
-      <Dialog>
-        <form>
-          <DialogTrigger as-child>
-            <Button> <Plus class="w-4 h-4 mr-2" /> Novo produto </Button>
-          </DialogTrigger>
-          <DialogContent class="sm:max-w-[425px]">
+      <Dialog v-model:open="open">
+        <DialogTrigger as-child>
+          <Button> <Plus class="w-4 h-4 mr-2" /> Nova categoria </Button>
+        </DialogTrigger>
+
+        <DialogContent class="sm:max-w-[425px]">
+          <form @submit.prevent="handleSubmit">
             <DialogHeader>
-              <DialogTitle>Criar novo produto</DialogTitle>
-              <DialogDescription> Adicione os detalhes do novo produto abaixo. </DialogDescription>
+              <DialogTitle>Criar nova categoria</DialogTitle>
+              <DialogDescription>
+                Adicione os detalhes da nova categoria abaixo.
+              </DialogDescription>
             </DialogHeader>
-            <div class="grid gap-4">
+
+            <div class="grid gap-4 py-4">
               <div class="grid gap-3">
                 <Label for="name-1">Nome</Label>
-                <Input id="name-1" name="name"  />
+                <Input
+                  id="name-1"
+                  v-model="name"
+                  name="name"
+                  placeholder="Ex: Eletrônicos"
+                  required
+                />
               </div>
-              <div class="grid gap-3">
-                <Label for="price">Preço</Label>
-                <Input id="price" name="price" />
-              </div>
-              <div class="grid gap-3">
-                <FormField v-slot="{ field }" name="country">
-                  <FormItem>
-                    <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <NativeSelect v-bind="field">
-                        <NativeSelectOption value=""> Selecione a Categoria </NativeSelectOption>
-                        <NativeSelectOption value="us"> tetse </NativeSelectOption>
-                        <NativeSelectOption value="uk"> teste2 </NativeSelectOption>
-                        <NativeSelectOption value="ca"> teste3 </NativeSelectOption>
-                      </NativeSelect>
-                    </FormControl>
-                    <FormDescription> Selecine a categoria </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-              </div>
-
             </div>
+
             <DialogFooter>
               <DialogClose as-child>
-                <Button variant="outline"> Cancel </Button>
+                <Button variant="outline" type="button"> Cancelar </Button>
               </DialogClose>
-              <Button type="submit"> Salvar </Button>
+              <Button type="submit" :disabled="loading">
+                {{ loading ? 'Processando...' : 'Salvar' }}
+              </Button>
             </DialogFooter>
-          </DialogContent>
-        </form>
+          </form>
+        </DialogContent>
       </Dialog>
     </div>
 

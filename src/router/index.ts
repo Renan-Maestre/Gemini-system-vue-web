@@ -3,6 +3,8 @@ import  LoginView  from "../views/auth/LoginView.vue";
 import RegsiterView from "../views/auth/RegisterView.vue";
 import DashboardView from '@/views/dashboard/DashboardView.vue';
 import ProductsView from "@/views/products/ProductsView.vue";
+import CategoryView from "@/views/category/CategoryView.vue";
+
 
 
 const router = createRouter({
@@ -34,6 +36,10 @@ const router = createRouter({
       path: '/products',
       name: 'products',
       component: ProductsView,
+    },{
+      path: '/categories',
+      name: 'categories',
+      component: CategoryView,
     }
 
   ],

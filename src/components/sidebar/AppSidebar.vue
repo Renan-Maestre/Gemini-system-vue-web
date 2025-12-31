@@ -27,7 +27,8 @@ import {
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   variant: "inset",
-  collapsible: "icon"
+  collapsible:"icon" ,
+
 
 })
 
@@ -61,7 +62,7 @@ const data = {
         },
         {
           title: "Categorias",
-          url: "#",
+          url: "/categories",
         },
       ],
     },
