@@ -48,12 +48,12 @@ const data = {
     },
     {
       title: "Produtos",
-      url: "#",
+      url: "",
       icon: Package,
       items: [
         {
           title: "Geral",
-          url: "#",
+          url: "/products",
         },
         {
           title: "Relatórios",
