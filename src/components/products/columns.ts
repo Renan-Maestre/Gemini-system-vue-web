@@ -1,15 +1,6 @@
 import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
-import { Button } from '@/components/ui/button'
-import { MoreHorizontal } from 'lucide-vue-next'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import ProductActions from './ProductActions.vue'
 
 export interface Product {
   id: number
@@ -61,40 +52,21 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: 'Ações',
-    size: 50,
     id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
+    size: 50,
+    cell: ({ row, table }) => {
       const product = row.original
+      // Pegamos as categorias e a função de refresh passadas via 'meta' na tabela
+      const { categories, refresh } = table.options.meta as {
+        categories: { id: string; name: string }[]
+        refresh: () => void
+      }
 
-      return h(
-        DropdownMenu,
-        {},
-        {
-          default: () => [
-            h(DropdownMenuTrigger, { asChild: true }, () =>
-              h(Button, { variant: 'ghost', class: 'h-8 w-8 p-0' }, () => [
-                h('span', { class: 'sr-only' }, 'Abrir menu'),
-                h(MoreHorizontal, { class: 'h-4 w-4' }),
-              ]),
-            ),
-            h(DropdownMenuContent, { align: 'end' }, () => [
-              h(DropdownMenuLabel, () => 'Ações'),
-              h(
-                DropdownMenuItem,
-                {
-                  onClick: () => navigator.clipboard.writeText(product.id),
-                },
-                () => 'Copiar ID do produto',
-              ),
-              h(DropdownMenuSeparator),
-              h(DropdownMenuItem, () => 'Editar detalhes'),
-              h(DropdownMenuItem, { class: 'text-destructive' }, () => 'Excluir produto'),
-            ]),
-          ],
-        },
-      )
+      return h(ProductActions, {
+        product,
+        categories,
+        onRefresh: () => refresh(),
+      })
     },
   },
 ]

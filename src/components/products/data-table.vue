@@ -39,7 +39,7 @@ import api from '@/services/api'
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  categories: any[]
+  categories: { id: string; name: string }[]
 }>()
 
 const emit = defineEmits(['refresh'])
@@ -72,6 +72,10 @@ const table = useVueTable({
     get rowSelection() {
       return rowSelection.value
     },
+  },
+  meta: {
+    categories: props.categories, // Passa as categorias para as colunas
+    refresh: () => emit('refresh'), // Passa a função de recarregar
   },
 })
 
