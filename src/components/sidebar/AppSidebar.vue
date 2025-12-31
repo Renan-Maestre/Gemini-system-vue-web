@@ -27,7 +27,10 @@ import {
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   variant: "inset",
+  collapsible: "icon"
+
 })
+
 
 const data = {
   user: {
