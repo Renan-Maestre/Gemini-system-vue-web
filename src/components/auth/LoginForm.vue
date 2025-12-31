@@ -14,6 +14,8 @@ import {
   FieldSeparator,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Eye, EyeOff } from 'lucide-vue-next'
+const showPassword = ref(false)
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
@@ -42,7 +44,6 @@ const handleSubmit = async () => {
 
     localStorage.setItem('user_name', response.data.user.name)
     localStorage.setItem('user_email', response.data.user.email)
-
 
     console.log('Login efetuado com sucesso, a redirecionar...')
 
@@ -83,14 +84,25 @@ const handleSubmit = async () => {
             </Field>
 
             <Field>
-              <div class="flex items-center">
                 <FieldLabel for="password">Senha</FieldLabel>
-                <a href="#" class="ml-auto text-sm underline-offset-2 hover:underline"
-                  >esqueceu a senha?</a
-                >
-              </div>
-              <Input id="password" v-model="password" type="password" required />
-            </Field>
+                <div class="relative">
+                  <Input
+                    id="password"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <EyeOff v-if="!showPassword" class="size-4" />
+                    <Eye v-else class="size-4" />
+                  </button>
+                </div>
+              </Field>
 
             <Field>
               <Button type="submit" :disabled="loading" class="w-full">
@@ -123,12 +135,11 @@ const handleSubmit = async () => {
             class="absolute inset-0 h-full w-full object-cover"
           />
         </div>
-
       </CardContent>
     </Card>
-     <FieldDescription class="px-6 text-center">
-      Ao clicar em entrar, você concorda com nossos <a href="#">Termos de Serviço</a>
-      e <a href="#">Política de Privacidade</a>.
+    <FieldDescription class="px-6 text-center">
+      Ao clicar em entrar, você concorda com nossos <a href="#">Termos de Serviço</a> e
+      <a href="#">Política de Privacidade</a>.
     </FieldDescription>
   </div>
 </template>

@@ -23,14 +23,32 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { valueUpdater } from '@/components/ui/table/utils'
+
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from '@/components/ui/native-select'
+
+import { Label } from '@/components/ui/label'
+
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
@@ -79,25 +97,48 @@ const table = useVueTable({
         @update:model-value="table.getColumn('name')?.setFilterValue($event)"
       />
 
-      <Sheet>
-        <SheetTrigger as-child>
-          <Button>
-            <Plus class="w-4 h-4 mr-2" />
-            Novo Produto
-          </Button>
-        </SheetTrigger>
-        <SheetContent class="sm:max-w-540px">
-          <SheetHeader>
-            <SheetTitle>Criar Novo Produto</SheetTitle>
-            <SheetDescription>
-              Adicione as informações básicas do seu produto aqui.
-            </SheetDescription>
-          </SheetHeader>
-          <div class="grid gap-4 py-4">
-            <p class="text-sm text-muted-foreground">Aqui você insere seus campos de Input...</p>
-          </div>
-        </SheetContent>
-      </Sheet>
+      <Dialog>
+        <form>
+          <DialogTrigger as-child>
+            <Button> <Plus class="w-4 h-4 mr-2" /> Novo Produto </Button>
+          </DialogTrigger>
+          <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Criar novo produto</DialogTitle>
+              <DialogDescription> Adicione os detalhes do novo produto abaixo. </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4">
+              <div class="grid gap-3">
+                <Label for="name-1">Nome</Label>
+                <Input id="name-1" name="name" default-value="Pedro Duarte" />
+              </div>
+              <div class="grid gap-3">
+                <FormField v-slot="{ field }" name="country">
+                  <FormItem>
+                    <FormLabel>Categoria</FormLabel>
+                    <FormControl>
+                      <NativeSelect v-bind="field">
+                        <NativeSelectOption value=""> Selecione a Categoria </NativeSelectOption>
+                        <NativeSelectOption value="us"> tetse </NativeSelectOption>
+                        <NativeSelectOption value="uk"> teste2 </NativeSelectOption>
+                        <NativeSelectOption value="ca"> teste3 </NativeSelectOption>
+                      </NativeSelect>
+                    </FormControl>
+                    <FormDescription> Select a country </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button variant="outline"> Cancel </Button>
+              </DialogClose>
+              <Button type="submit"> Save changes </Button>
+            </DialogFooter>
+          </DialogContent>
+        </form>
+      </Dialog>
     </div>
 
     <div class="w-full">
