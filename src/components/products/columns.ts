@@ -1,17 +1,22 @@
 import { h } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import ProductActions from './ProductActions.vue'
+import { Badge } from '@/components/ui/badge'
 
 export interface Product {
+  uuid: string
   id: number
   name: string
+  description: string
   price: number
+  quantity: number
+  status: boolean
+  image: string | null
   category: {
-    id: number
+    uuid: string
     name: string
   }
-  status?: string
-  stock?: number
+  created_at: string
 }
 
 export const columns: ColumnDef<Product>[] = [
@@ -29,7 +34,7 @@ export const columns: ColumnDef<Product>[] = [
     // Acessando o nome dentro do objeto category
     accessorKey: 'category.name',
     header: 'Categoria',
-    cell: ({ row }) => h('div', {}, row.original.category?.name || 'Sem categoria'),
+    cell: ({ row }) => h('div', {}, row.original.category?.name || ' - '),
   },
   {
     accessorKey: 'price',
@@ -44,19 +49,30 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: 'stock',
+    accessorKey: 'quantity', 
     header: () => h('div', { class: 'text-center' }, 'Qtd.'),
+    cell: ({ row }) => h('div', { class: 'text-center font-medium' }, row.getValue('quantity')),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
     cell: ({ row }) => {
-      const stock = row.getValue('stock') as number
-      return h('div', { class: 'text-center font-medium' }, stock)
+      const status = row.getValue('status') as boolean
+      return h(Badge, { variant: status ? 'default' : 'destructive' }, () =>
+        status ? 'Ativo' : 'Inativo',
+      )
     },
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Criado em',
+    cell: ({ row }) => h('div', { class: 'text-muted-foreground' }, row.getValue('created_at')),
   },
   {
     id: 'actions',
     size: 50,
     cell: ({ row, table }) => {
       const product = row.original
-      // Pegamos as categorias e a função de refresh passadas via 'meta' na tabela
       const { categories, refresh } = table.options.meta as {
         categories: { id: string; name: string }[]
         refresh: () => void
