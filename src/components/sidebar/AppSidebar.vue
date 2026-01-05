@@ -2,14 +2,15 @@
 import type { SidebarProps } from '@/components/ui/sidebar'
 
 import {
-  Command,
+
   LifeBuoy,
   Send,
   Settings2,
-
   ChartColumn,
-  Package
-} from "lucide-vue-next"
+  Package,
+  Building2,
+  CircleDollarSign
+} from 'lucide-vue-next'
 
 import NavMain from '@/components/sidebar/NavMain.vue'
 import NavSecondary from '@/components/sidebar/NavSecondary.vue'
@@ -19,107 +20,97 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from '@/components/ui/sidebar'
-
+import SystemSwitcher from './SystemSwitcher.vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
-  variant: "inset",
-  collapsible:"icon" ,
-
-
+  variant: 'inset',
+  collapsible: 'icon',
 })
-
 
 const data = {
   user: {
-    name: "Renan Maestre",
-    email: "Empresa@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: 'Renan Maestre',
+    email: 'Empresa@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
-  navMain: [
+  system: [
     {
-      title: "Dashboard",
-      url: "/home",
-      icon: ChartColumn,
-
-
+      name: 'ERP - Gemini',
+      logo: Building2,
+      type: 'Gestão Empresarial',
     },
     {
-      title: "Produtos",
-      url: "#",
+      name: 'PDV - Gemini',
+      logo: CircleDollarSign,
+      type: 'vendas e pagamentos',
+    }
+
+  ],
+  navMain: [
+    {
+      title: 'Dashboard',
+      url: '/home',
+      icon: ChartColumn,
+    },
+    {
+      title: 'Produtos',
+      url: '#',
       icon: Package,
       items: [
         {
-          title: "Geral",
-          url: "/products",
+          title: 'Geral',
+          url: '/products',
         },
         {
-          title: "Relatórios",
-          url: "#",
+          title: 'Relatórios',
+          url: '#',
         },
         {
-          title: "Categorias",
-          url: "/categories",
+          title: 'Categorias',
+          url: '/categories',
         },
       ],
     },
     {
-      title: "Configurações",
-      url: "#",
+      title: 'Configurações',
+      url: '#',
       icon: Settings2,
       items: [
         {
-          title: "Geral",
-          url: "#",
+          title: 'Geral',
+          url: '#',
         },
         {
-          title: "Equipe",
-          url: "#",
+          title: 'Equipe',
+          url: '#',
         },
         {
-          title: "Limites de Conta",
-          url: "#",
+          title: 'Limites de Conta',
+          url: '#',
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: "Supoerte",
-      url: "#",
+      title: 'Supoerte',
+      url: '#',
       icon: LifeBuoy,
     },
     {
-      title: "Feedback",
-      url: "#",
+      title: 'Feedback',
+      url: '#',
       icon: Send,
     },
   ],
-
 }
 </script>
 
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" as-child>
-            <a href="#">
-              <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Command class="size-4" />
-              </div>
-              <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-medium">Gemini Vue system</span>
-                <span class="truncate text-xs">Empresa</span>
-              </div>
-            </a>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <SystemSwitcher :system="data.system" />
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
