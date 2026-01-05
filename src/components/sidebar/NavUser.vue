@@ -42,7 +42,7 @@ async function handleLogout() {
     localStorage.removeItem('user_name')
     localStorage.removeItem('user_email')
 
-    
+
     router.push('/login')
   }
 }
@@ -115,7 +115,7 @@ async function handleLogout() {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="handleLogout" class="cursor-pointer">
+          <DropdownMenuItem @click="handleLogout" class="cursor-pointer hover:bg-destructive hover:font-bold">
             <LogOut />
             Sair
           </DropdownMenuItem>
