@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -38,9 +38,18 @@ const loading = ref(true)
 const isCaixaAberto = ref(true)
 const products = ref<Product[]>([])
 const categories = ref<CategoryPDV[]>([])
-const cart = ref<CartItem[]>([])
+const savedCart = localStorage.getItem('pdv-cart')
+const cart = ref<CartItem[]>(savedCart ? JSON.parse(savedCart) : [])
 const searchQuery = ref('')
 const selectedCategory = ref('all')
+
+watch(
+  cart,
+  (newCart) => {
+    localStorage.setItem('pdv-cart', JSON.stringify(newCart))
+  },
+  { deep: true } // O 'deep' é obrigatório para detectar mudança na quantidade (cartQuantity)
+)
 
 const fetchPDVData = async () => {
   loading.value = true
