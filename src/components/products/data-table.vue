@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { ref, defineEmits, type AriaAttributes } from 'vue'
+import { ref, defineEmits } from 'vue'
 import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table'
 import {
   FlexRender,
@@ -140,7 +140,7 @@ const handleSubmit = async () => {
               </div>
               <div class="grid gap-2">
                 <Label>Categoria</Label>
-                <NativeSelect v-bind="Field" v-model="form.category_id" required class="w-full">
+                <NativeSelect v-bind="Field" v-model="form.category_id" required >
                   <option value="">Selecione uma categoria</option>
                   <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                     {{ cat.name }}

@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { NativeSelect } from '@/components/ui/native-select'
 import api from '@/services/api'
 import type { Product } from './columns'
+import Field from '../ui/field/Field.vue'
 
 const props = defineProps<{
   product: Product
@@ -91,7 +92,7 @@ const handleUpdate = async () => {
           </div>
           <div class="grid gap-2">
             <Label>Categoria</Label>
-            <NativeSelect v-model="form.category_id" required>
+            <NativeSelect v-bind="Field" v-model="form.category_id" required>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.name }}
               </option>
