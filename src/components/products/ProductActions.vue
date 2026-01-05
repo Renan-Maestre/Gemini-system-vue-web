@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { MoreHorizontal } from 'lucide-vue-next'
+import { MoreHorizontal, SquarePen } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -35,11 +35,44 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { NativeSelect } from '@/components/ui/native-select'
 import api from '@/services/api'
 import type { Product } from './columns'
+import { UploadCloud } from 'lucide-vue-next'
 
 const props = defineProps<{
   product: Product
   categories: any[]
 }>()
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+  const triggerImageUpload = () => {
+  fileInput.value?.click()
+}
+
+
+const handleImageUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  loading.value = true
+  try {
+
+    await api.post(`/product/${props.product.uuid}/image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    emit('refresh') // Atualiza a tabela após o upload bem-sucedido
+  } catch (error) {
+    console.error("Erro ao fazer upload da imagem:", error)
+  } finally {
+    loading.value = false
+  }
+}
 
 const emit = defineEmits(['refresh'])
 const loading = ref(false)
@@ -150,7 +183,15 @@ const handleDelete = async () => {
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>Ações</DropdownMenuLabel>
+
+      <DropdownMenuItem @click="triggerImageUpload">
+        <UploadCloud class="mr-2 h-4 w-4" />
+        Atualizar Imagem
+      </DropdownMenuItem>
+
+
       <DropdownMenuItem @click="isEditDialogOpen = true">
+         <SquarePen class="mr-2 h-4 w-4" />
         Editar detalhes
       </DropdownMenuItem>
       <DropdownMenuSeparator />
@@ -162,6 +203,14 @@ const handleDelete = async () => {
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
+
+  <input
+    type="file"
+    ref="fileInput"
+    class="hidden"
+    accept="image/*"
+    @change="handleImageUpload"
+  />
 
   <Dialog v-model:open="isEditDialogOpen">
     <DialogContent class="sm:max-w-[500px]">
