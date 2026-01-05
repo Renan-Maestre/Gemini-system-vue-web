@@ -139,18 +139,18 @@ onMounted(fetchPDVData)
       </div>
     </header>
 
-    <section class="p-4 bg-muted/30 border-b flex flex-wrap gap-4 items-center justify-between">
+    <section class="p-4 bg-muted/30 border-b flex flex-wrap gap-4 items-cent justify-between">
       <div class="flex flex-1 gap-4 min-w-75">
         <div class="relative flex-1">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             v-model="searchQuery"
             placeholder="Buscar por nome..."
-            class="pl-10 h-11 bg-card shadow-sm"
+            class="pl-10  bg-card shadow-sm"
           />
         </div>
 
-        <Select v-model="selectedCategory">
+        <Select v-model="selectedCategory" >
           <SelectTrigger class="w-55 h-11 bg-card shadow-sm">
             <SelectValue placeholder="Todas as Categorias" />
           </SelectTrigger>
@@ -167,7 +167,7 @@ onMounted(fetchPDVData)
       </div>
 
       <div class="flex gap-2">
-        <Button variant="outline" class="h-11 gap-2" @click="fetchPDVData">
+        <Button variant="outline" class="h-9 gap-2" @click="fetchPDVData">
           <RefreshCw class="size-4" :class="{ 'animate-spin': loading }" />
           Sincronizar
         </Button>
