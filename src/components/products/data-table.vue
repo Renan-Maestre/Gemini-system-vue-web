@@ -75,7 +75,9 @@ const table = useVueTable({
     },
   },
   meta: {
-    categories: props.categories, // Passa as categorias para as colunas
+    get categories() {
+      return props.categories
+    },
     refresh: () => emit('refresh'), // Passa a função de recarregar
   },
 })
