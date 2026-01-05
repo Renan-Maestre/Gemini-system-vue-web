@@ -247,7 +247,7 @@ onMounted(fetchPDVData)
             class="py-4 border-b last:border-0 flex gap-3 group"
           >
             <div class="flex gap-4">
-    <div class="relative size-16 shrink-0 rounded-lg overflow-hidden bg-white/5 border border-zinc-800 flex items-center justify-center">
+    <div class="relative size-16 shrink-0 rounded-lg overflow-hidden bg-white/5  flex items-center justify-center">
       <img v-if="item.image" :src="baseURL + item.image" class="size-full object-cover shadow-sm" />
       <Package v-else class="size-6 text-zinc-700" />
     </div>

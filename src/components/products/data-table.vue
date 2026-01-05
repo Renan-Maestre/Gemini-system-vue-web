@@ -137,7 +137,7 @@ const handleSubmit = async () => {
         <DialogTrigger as-child>
           <Button> <Plus class="w-4 h-4 mr-2" /> Novo produto </Button>
         </DialogTrigger>
-        <DialogContent class="sm:max-w-[500px]">
+        <DialogContent class="sm:max-w-125">
           <form @submit.prevent="handleSubmit">
             <DialogHeader>
               <DialogTitle>Criar novo produto</DialogTitle>

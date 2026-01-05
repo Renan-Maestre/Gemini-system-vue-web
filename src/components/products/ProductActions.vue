@@ -213,7 +213,7 @@ const handleDelete = async () => {
   />
 
   <Dialog v-model:open="isEditDialogOpen">
-    <DialogContent class="sm:max-w-[500px]">
+    <DialogContent class="sm:max-w-125">
       <form @submit.prevent="handleUpdate">
         <DialogHeader>
           <DialogTitle>Editar Produto</DialogTitle>
