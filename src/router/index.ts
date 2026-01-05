@@ -33,15 +33,21 @@ const router = createRouter({
       component: DashboardView,
     },
     {
+      path: '/pdv',
+      name: 'pdv',
+      component: () => import('../views/pdv/PdvView.vue'),
+      meta: { hideSidebar: true }, 
+    },
+    {
       path: '/products',
       name: 'products',
       component: ProductsView,
-    },{
+    },
+    {
       path: '/categories',
       name: 'categories',
       component: CategoryView,
-    }
-
+    },
   ],
 })
 router.beforeEach((to, from, next) => {

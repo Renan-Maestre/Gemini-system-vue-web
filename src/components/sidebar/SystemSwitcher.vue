@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue"
+import { useRouter } from 'vue-router'
 
 import { ChevronsUpDown} from "lucide-vue-next"
 import { ref } from "vue"
@@ -18,6 +19,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+
+
+const router = useRouter()
+
+const handleTeamChange = (system: any) => {
+  activeSystem.value = system
+
+  // Se o sistema selecionado for um que deve abrir o PDV
+  if (system.name === 'PDV - Gemini') { // Ou qualquer outra lógica
+    router.push('/pdv')
+  }else{
+    router.push('/home')
+  }
+}
 
 interface System {
   name: string
@@ -69,7 +84,7 @@ const activeSystem = ref(props.system[0]!)
             v-for="(team) in system"
             :key="team.name"
             class="gap-2 p-2"
-            @click="activeSystem = team"
+            @click="handleTeamChange(team)"
           >
             <div class="flex size-6 items-center justify-center rounded-sm border">
               <component :is="team.logo" class="size-3.5 shrink-0" />

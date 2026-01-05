@@ -7,13 +7,19 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import ModeToggle from '@/components/ModeToggle.vue'
 import { computed } from 'vue'
 
+
 const route = useRoute()
-// Verifica se a rota atual possui a propriedade meta.isPublic
-const isPublicPage = computed(() => route.meta.isPublic === true)
+
+// Escondemos a sidebar se for página pública (login/reg) 
+const shouldHideSidebar = computed(() => {
+  return route.meta.isPublic === true || route.meta.hideSidebar === true
+})
 </script>
 
 <template>
-  <SidebarProvider v-if="!isPublicPage">
+
+
+  <SidebarProvider v-if="!shouldHideSidebar">
     <AppSidebar />
     <SidebarInset>
       <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -43,8 +49,8 @@ const isPublicPage = computed(() => route.meta.isPublic === true)
     </SidebarInset>
   </SidebarProvider>
 
-  <div v-else class="min-h-screen bg-background relative transition-colors duration-300">
-    <div class="absolute top-4 right-4 z-50">
+<div v-else class="min-h-screen bg-background relative transition-colors duration-300">
+    <div v-if="route.meta.isPublic" class="absolute top-4 right-4 z-50">
       <ModeToggle />
     </div>
     <RouterView />
