@@ -4,6 +4,7 @@ import RegsiterView from "../views/auth/RegisterView.vue";
 import DashboardView from '@/views/dashboard/DashboardView.vue';
 import ProductsView from "@/views/products/ProductsView.vue";
 import CategoryView from "@/views/category/CategoryView.vue";
+import ClientsView from '@/views/clients/ClientsView.vue';
 
 
 
@@ -36,12 +37,17 @@ const router = createRouter({
       path: '/pdv',
       name: 'pdv',
       component: () => import('../views/pdv/PdvView.vue'),
-      meta: { hideSidebar: true }, 
+      meta: { hideSidebar: true },
     },
     {
       path: '/products',
       name: 'products',
       component: ProductsView,
+    },
+    {
+      path: '/clients',
+      name: 'clients',
+      component: ClientsView,
     },
     {
       path: '/categories',

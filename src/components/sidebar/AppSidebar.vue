@@ -9,7 +9,8 @@ import {
   ChartColumn,
   Package,
   Building2,
-  CircleDollarSign
+  CircleDollarSign,
+  User2Icon
 } from 'lucide-vue-next'
 
 import NavMain from '@/components/sidebar/NavMain.vue'
@@ -70,6 +71,22 @@ const data = {
           title: 'Categorias',
           url: '/categories',
         },
+      ],
+    },
+    {
+      title: 'Clientes',
+      url: '#',
+      icon: User2Icon,
+      items: [
+        {
+          title: 'Geral',
+          url: '/clients',
+        },
+        {
+          title: 'Relatórios',
+          url: '#',
+        },
+
       ],
     },
     {
