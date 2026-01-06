@@ -5,7 +5,7 @@ import DataTable from '@/components/products/data-table.vue'
 import api from '@/services/api'
 
 const products = ref([])
-const categories = ref([]) // Adicione este ref
+const categories = ref([])
 const loading = ref(true)
 
 const fetchData = async () => {
@@ -16,7 +16,7 @@ const fetchData = async () => {
       api.get('/category') // Busca as categorias para o select
     ])
     products.value = prodRes.data.data
-    categories.value = catRes.data.data // Salva as categorias
+    categories.value = catRes.data.data 
   } catch (error) {
     console.error("Erro:", error)
   } finally {
