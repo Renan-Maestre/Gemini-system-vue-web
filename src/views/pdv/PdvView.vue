@@ -21,6 +21,7 @@ import api from '@/services/api'
 
 import type { Product } from '@/components/products/columns'
 import Contador from '@/components/contador.vue'
+import CheckoutModal from '@/components/pdv/CheckoutModal.vue'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 
@@ -28,6 +29,8 @@ interface CategoryPDV {
   uuid: string
   name: string
 }
+
+const isCheckoutOpen = ref(false)
 
 // Interface para o item no carrinho
 interface CartItem extends Product {
@@ -106,6 +109,27 @@ const formatPrice = (val: number | string) => {
 }
 
 onMounted(fetchPDVData)
+
+const handleFinalizeSale = (saleData: any) => {
+  console.log('Dados da Venda:', saleData)
+  //  chama seu api.post('/sales', saleData)
+
+  // Limpa o carrinho após sucesso
+  cart.value = []
+  isCheckoutOpen.value = false
+  alert('Venda finalizada com sucesso!')
+}
+
+//  atalho de teclado F10
+onMounted(() => {
+  fetchPDVData()
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'F10' && cart.value.length > 0) {
+      e.preventDefault()
+      isCheckoutOpen.value = true
+    }
+  })
+})
 </script>
 
 <template>
@@ -295,9 +319,16 @@ onMounted(fetchPDVData)
             </div>
           </div>
 
+          <CheckoutModal
+            v-model:open="isCheckoutOpen"
+            :subtotal="cartTotal"
+            @confirm="handleFinalizeSale"
+          />
+
           <Button
             class="w-full h-16 text-xl font-black bg-white text-primary hover:bg-zinc-100 shadow-xl"
             :disabled="cart.length === 0 || !isCaixaAberto"
+            @click="isCheckoutOpen = true"
           >
             PAGAMENTO (F10)
           </Button>
