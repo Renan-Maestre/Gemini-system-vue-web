@@ -16,6 +16,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Eye, EyeOff } from 'lucide-vue-next'
 
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore()
+
 const props = defineProps<{
   class?: HTMLAttributes['class']
 }>()
@@ -44,12 +48,9 @@ const handleSubmit = async () => {
       password_confirmation: confirmPassword.value,
     })
 
-    const token = response.data.token
+    authStore.setToken(response.data.token)
 
-    localStorage.setItem('user_token', token)
-    localStorage.setItem('user_name', response.data.user.name)
-    localStorage.setItem('user_email', response.data.user.email)
-
+    await authStore.fetchUser()
     await router.push('/home')
   } catch (error: unknown) {
     if (isAxiosError(error)) {
