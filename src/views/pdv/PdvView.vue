@@ -124,7 +124,7 @@ const handleFinalizeSale = (saleData: any) => {
 onMounted(() => {
   fetchPDVData()
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'F10' && cart.value.length > 0) {
+    if (e.key === 'F6' && cart.value.length > 0) {
       e.preventDefault()
       isCheckoutOpen.value = true
     }
@@ -330,7 +330,7 @@ onMounted(() => {
             :disabled="cart.length === 0 || !isCaixaAberto"
             @click="isCheckoutOpen = true"
           >
-            PAGAMENTO (F10)
+            PAGAMENTO (F6)
           </Button>
         </div>
       </aside>
