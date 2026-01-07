@@ -15,6 +15,9 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Eye, EyeOff } from 'lucide-vue-next'
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore()
 const showPassword = ref(false)
 
 const props = defineProps<{
@@ -27,32 +30,39 @@ const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
+const loginWithGoogle = async () => {
+  // Redirecionar para o endpoint de login do Google
+  window.location.href = 'http://localhost/api/auth/google'
+
+
+}
+
 const handleSubmit = async () => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    // 1. Faz a chamada à API
+    // Faz o login e pega apenas o token
     const response = await api.post('/login', {
       email: email.value,
       password: password.value,
     })
 
-    const token = response.data.token
+    //  Salva o token na store e no localStorage
+    authStore.setToken(response.data.token)
 
-    localStorage.setItem('user_token', token)
+    //  Busca os dados do usuário usando o token recém-salvo
+    await authStore.fetchUser()
 
-    localStorage.setItem('user_name', response.data.user.name)
-    localStorage.setItem('user_email', response.data.user.email)
-
-    console.log('Login efetuado com sucesso, a redirecionar...')
-
+    console.log('Login e carregamento de perfil concluídos!')
     await router.push('/home')
   } catch (error: unknown) {
     if (isAxiosError(error)) {
+      // Erro de credenciais (401/422)
       errorMessage.value = error.response?.data?.message || 'Email ou senha incorretos.'
     } else {
-      errorMessage.value = 'Ocorreu um erro inesperado.'
+      // Erro de código/lógica (como tentar ler propriedade de undefined)
+      errorMessage.value = 'Erro ao carregar perfil do usuário.'
     }
     console.error('Erro no login:', error)
   } finally {
@@ -120,6 +130,7 @@ const handleSubmit = async () => {
 
             <Field class="">
               <Button
+                @click="loginWithGoogle"
                 variant="outline"
                 type="button"
                 class="google-btn-animated relative flex items-center justify-center py-6 w-full transition-all border-2 text-black dark:text-white bg-white dark:bg-zinc-800 [--inner-bg:white] dark:[--inner-bg:#27272a]"
@@ -207,6 +218,8 @@ const handleSubmit = async () => {
 }
 
 @keyframes rotate {
-  to { --angle: 360deg; }
+  to {
+    --angle: 360deg;
+  }
 }
 </style>

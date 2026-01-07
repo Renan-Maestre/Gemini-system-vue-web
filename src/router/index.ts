@@ -5,6 +5,7 @@ import DashboardView from '@/views/dashboard/DashboardView.vue';
 import ProductsView from "@/views/products/ProductsView.vue";
 import CategoryView from "@/views/category/CategoryView.vue";
 import ClientsView from '@/views/clients/ClientsView.vue';
+import AuthCallback from "@/views/auth/AuthCallback.vue";
 
 
 
@@ -53,6 +54,12 @@ const router = createRouter({
       path: '/categories',
       name: 'categories',
       component: CategoryView,
+    },
+    {
+      path: '/auth/callback',
+      name: 'auth-callback',
+      component: AuthCallback,
+      meta: { isPublic: true },
     },
   ],
 })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router' //
-import api from '@/services/api'
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-vue-next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -19,8 +20,11 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-const name = localStorage.getItem('user_name')
-const email = localStorage.getItem('user_email')
+const authStore = useAuthStore()
+
+const name = computed(() => authStore.user.name)
+const email = computed(() => authStore.user.email)
+const avatar = computed(() => authStore.user.avatar )
 
 const props = defineProps<{
   user: {
@@ -31,9 +35,12 @@ const props = defineProps<{
 const { isMobile } = useSidebar()
 const router = useRouter()
 
+
+
 async function handleLogout() {
   try {
-    await api.post('/logout')
+    await authStore.logout()
+
   } catch (error) {
     console.error('Erro ao invalidar token no servidor:', error)
   } finally {
@@ -58,11 +65,8 @@ async function handleLogout() {
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="h-8 w-8 rounded-lg">
-              <AvatarImage
-                src="https://avatars.githubusercontent.com/u/155326901?v=4"
-                alt="Foto do Usuário"
-              />
-              <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
+              <AvatarImage :src="avatar" :alt="name" />
+              <AvatarFallback class="rounded-lg"> {{ name.charAt(0) }} </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{ name }}</span>
@@ -80,11 +84,8 @@ async function handleLogout() {
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src="https://avatars.githubusercontent.com/u/155326901?v=4"
-                  alt="Foto do Usuário"
-                />
-                <AvatarFallback class="rounded-lg"> RN </AvatarFallback>
+                <AvatarImage :src="avatar" :alt="name" />
+              <AvatarFallback class="rounded-lg"> {{ name.charAt(0) }} </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-semibold">{{ name }}</span>
