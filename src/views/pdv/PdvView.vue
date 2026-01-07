@@ -22,7 +22,7 @@ import api from '@/services/api'
 import type { Product } from '@/components/products/columns'
 import Contador from '@/components/contador.vue'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 
 interface CategoryPDV {
   uuid: string
@@ -48,7 +48,7 @@ watch(
   (newCart) => {
     localStorage.setItem('pdv-cart', JSON.stringify(newCart))
   },
-  { deep: true } // O 'deep' é obrigatório para detectar mudança na quantidade (cartQuantity)
+  { deep: true }, // O 'deep' é obrigatório para detectar mudança na quantidade (cartQuantity)
 )
 
 const fetchPDVData = async () => {
@@ -146,11 +146,11 @@ onMounted(fetchPDVData)
           <Input
             v-model="searchQuery"
             placeholder="Buscar por nome..."
-            class="pl-10  bg-card shadow-sm"
+            class="pl-10 bg-card shadow-sm"
           />
         </div>
 
-        <Select v-model="selectedCategory" >
+        <Select v-model="selectedCategory">
           <SelectTrigger class="w-55 h-11 bg-card shadow-sm">
             <SelectValue placeholder="Todas as Categorias" />
           </SelectTrigger>
@@ -201,7 +201,7 @@ onMounted(fetchPDVData)
               />
               <Package v-else class="size-12 text-muted-foreground/30" />
               <div
-                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                class="absolute inset-0 bg-black/40 scale-110 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
               >
                 <Plus class="text-white size-8" />
               </div>
@@ -247,10 +247,16 @@ onMounted(fetchPDVData)
             class="py-4 border-b last:border-0 flex gap-3 group"
           >
             <div class="flex gap-4">
-    <div class="relative size-16 shrink-0 rounded-lg overflow-hidden bg-white/5  flex items-center justify-center">
-      <img v-if="item.image" :src="baseURL + item.image" class="size-full object-cover shadow-sm" />
-      <Package v-else class="size-6 text-zinc-700" />
-    </div>
+              <div
+                class="relative size-16 shrink-0 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center"
+              >
+                <img
+                  v-if="item.image"
+                  :src="baseURL + item.image"
+                  class="size-full object-cover shadow-sm"
+                />
+                <Package v-else class="size-6 text-zinc-700" />
+              </div>
             </div>
 
             <div class="flex-1 min-w-0">

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ImageIcon } from 'lucide-vue-next'
 
-const baseURL = import.meta.env.API_BASE_URL || 'http://127.0.0.1:8000'
+const baseURL = import.meta.env.API_BASE_URL || 'http://localhost'
 export interface Product {
   uuid: string
   id: number
@@ -23,21 +23,17 @@ export interface Product {
 }
 
 export const columns: ColumnDef<Product>[] = [
-{
+  {
     accessorKey: 'image',
     header: '',
     size: 50,
     cell: ({ row }) => {
-      const imageUrl = row.original.image
-        ? `${baseURL}${row.original.image}`
-        : null
+      const imageUrl = row.original.image ? `${baseURL}${row.original.image}` : null
 
       return h(Avatar, { class: 'h-10 w-10 border' }, () => [
-        imageUrl
-          ? h(AvatarImage, { src: imageUrl, class: 'object-cover' })
-          : null,
+        imageUrl ? h(AvatarImage, { src: imageUrl, class: 'object-cover' }) : null,
         h(AvatarFallback, { class: 'bg-muted' }, () =>
-          h(ImageIcon, { class: 'h-4 w-4 text-muted-foreground' })
+          h(ImageIcon, { class: 'h-4 w-4 text-muted-foreground' }),
         ),
       ])
     },
